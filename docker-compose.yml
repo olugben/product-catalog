@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # The Node.js application service
+  app:
+    build: .
+    container_name: product-catalog-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=product_catalog
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: ["npm", "start"]
+
+  # The PostgreSQL service
+  db:
+    image: postgres:13
+    container_name: product-catalog-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: product_catalog
+    ports:
+      - "5432:5432"
+    volumes:
+      - product_catalog_data:/var/lib/postgresql/data
+
+# Volumes to persist data
+volumes:
+  product_catalog_data:

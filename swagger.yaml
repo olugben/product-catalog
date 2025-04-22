@@ -1,0 +1,59 @@
+swagger: "2.0"
+info:
+  title: "Product API"
+  description: "API for managing products"
+  version: "1.0.0"
+paths:
+  /api/products:
+    get:
+      summary: "Get all products"
+      description: "Retrieves all products in the catalog."
+      operationId: "getAllProducts"
+      tags:
+        - "Products"
+      responses:
+        '200':
+          description: "Products retrieved successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 1
+                            name:
+                              type: string
+                              example: "Product A"
+                            price:
+                              type: number
+                              format: float
+                              example: 29.99
+                            stock:
+                              type: integer
+                              example: 100
+                            created_at:
+                              type: string
+                              format: date-time
+                              example: "2023-04-22T10:00:00Z"
+                            updated_at:
+                              type: string
+                              format: date-time
+                              example: "2023-04-22T10:10:00Z"
+        '500':
+          description: "Internal server error"
+    post:
+      summary: "Create a new product"
+      description: "Creates a new product with the provided name, price, and stock."
+      operationId: "createProduct"
