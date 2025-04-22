@@ -1,3 +1,4 @@
+version: '3.8'
 
 services:
   # The Node.js application service
@@ -5,21 +6,21 @@ services:
     build: .
     container_name: product-catalog-api
     ports:
-      - "3000:3000"
+      - "3000:3000"  # Exposing app on host:3000
     environment:
       - NODE_ENV=development
-      - DB_HOST=db
+      - DB_HOST=db  # Host name of the Postgres container
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=product_catalog
     depends_on:
-      - db
+      - db  # Ensure the db service starts first
     volumes:
-      - .:/app
-    command: ["npm", "start"]
+      - .:/app  # Mount current directory into /app in the container
+    command: ["npm", "start"]  # Start your app with npm
 
-  # The PostgreSQL service
+  # The PostgreSQL database service
   db:
     image: postgres:13
     container_name: product-catalog-db
@@ -28,10 +29,10 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: product_catalog
     ports:
-      - "5432:5432"
+      - "5432:5432"  # Exposing Postgres DB on host:5432
     volumes:
-      - product_catalog_data:/var/lib/postgresql/data
+      - product_catalog_data:/var/lib/postgresql/data  # Persist database data
 
-# Volumes to persist data
+# Volumes to persist data between restarts
 volumes:
   product_catalog_data:
