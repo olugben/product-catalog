@@ -1,65 +1,60 @@
+name: Test and Deploy Product Catalog API
 
-name: CI Pipeline
-
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   test:
+    name: Build and Test Containers
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:14-alpine
-        env:
-          POSTGRES_DB: ${{ vars.TEST_DB_NAME || 'test_db' }}
-          POSTGRES_USER: ${{ secrets.TEST_DB_USER || 'test_user' }}
-          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASSWORD || 'test_password' }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    env:
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_NAME: ${{ vars.TEST_DB_NAME || 'test_db' }}
-      DB_USER: ${{ secrets.TEST_DB_USER || 'test_user' }}
-      DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD || 'test_password' }}
-      NODE_ENV: test
+
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Wait for PostgreSQL
-        timeout-minutes: 2
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker containers
+        run: docker compose -f docker-compose.yml up -d --build
+
+      - name: Run Tests
         run: |
-          for i in {1..10}; do
-            if nc -z localhost 5432; then
-              echo "PostgreSQL is ready"
-              exit 0
-            fi
-            sleep 3
-          done
-          echo "PostgreSQL failed to start"
-          exit 1
-          
-     
-          
-      - name: Run tests
-        run: npm test
-        env:
-          CI: true
-          TEST_RETRIES: 2
-          
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        if: always()
+          docker compose exec app npm test || true
+          docker compose down
+
+  deploy:
+    name: Deploy to EC2 Server
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy with SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_PUBLIC_IP }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            echo "💥 Removing old project"
+            rm -rf product-catalog-api
+
+            echo "📦 Cloning latest version"
+            git clone https://github.com/YOUR_USERNAME/product-catalog-api.git
+
+            cd product-catalog-api
+
+            echo "🔄 Restarting containers"
+            docker compose down
+            docker compose up -d --build
+
+            echo "🧹 Cleaning up Docker"
+            docker system prune -af
+
+            echo "✅ Deployment complete"
