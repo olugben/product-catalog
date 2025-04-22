@@ -46,9 +46,9 @@ jobs:
             rm -rf product-catalog-api
 
             echo " Cloning latest version"
-            git clone https://github.com/olugben/product-catalog-api.git
+            git clone https://github.com/olugben/product-catalog.git
 
-            cd product-catalog-api
+            cd product-catalog
 
             echo "🔄 Restarting containers"
             docker compose down
