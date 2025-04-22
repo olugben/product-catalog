@@ -46,7 +46,7 @@ jobs:
             rm -rf product-catalog-api
 
             echo " Cloning latest version"
-            git clone https://github.com/YOUR_USERNAME/product-catalog-api.git
+            git clone https://github.com/olugben/product-catalog-api.git
 
             cd product-catalog-api
 
