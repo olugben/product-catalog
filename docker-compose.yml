@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # The Node.js application service
@@ -29,9 +29,9 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: product_catalog
     ports:
-      - "5433:5432"  # Exposing Postgres DB on host:5433
+      - "5433:5432"  
     volumes:
-      - product_catalog_data:/var/lib/postgresql/data  # Persist database data
+      - product_catalog_data:/var/lib/postgresql/data  
 
 # Volumes to persist data between restarts
 volumes:

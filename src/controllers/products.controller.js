@@ -5,19 +5,19 @@ const ProductsService = require('../services/products.service');
 
 const createProduct = async (req, res, next) => {
   try {
-    console.log('Request body:', req.body.name); 
+    
     const { name, price, stock } = req.body;
     // Validate required fields
     if (!name ||!price ||!stock) {
  
-      throw new Error('Name, price, and rokeeb stock are required');
+      throw new Error('Name, price, and stock are required');
     }
 
     // Validate data types
     if (isNaN(req.body.price) || isNaN(req.body.stock)) {
       throw new Error('Price and stock must be numbers');
     }
-    console.log("namestockprice",name, price, stock)
+    
     const product = await productsService.create({name, price, stock})
     
     res.status(201).json({
@@ -25,7 +25,7 @@ const createProduct = async (req, res, next) => {
       data: { product }
     });
   } catch (error) {
-    res.status(400).json({ // Explicit 400 status
+    res.status(400).json({
       status: 'fail',
       message: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
@@ -36,7 +36,7 @@ const searchProducts = async (req, res, next) => {
   try {
     const { name, minPrice, maxPrice } = req.body;
 
-    console.log("Search query:", { name, minPrice, maxPrice });
+    
 
     const products = await productsService.search({
       name,
@@ -79,8 +79,8 @@ const getAllProducts = async (req, res, next) => {
 const getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const products = await productsService.search({}); // Assuming `search()` returns all products
-    const product = products.find(p => p.id === parseInt(id)); // crude filter
+    const products = await productsService.search({}); 
+    const product = products.find(p => p.id === parseInt(id)); 
 
     if (!product) {
       throw new Error(`Product with ID ${id} not found`);
@@ -151,7 +151,7 @@ const deleteProduct = async (req, res, next) => {
 };
 
 
-// Export all controller functions
+
 module.exports = {
   createProduct,
   searchProducts,

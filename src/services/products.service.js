@@ -1,10 +1,10 @@
-// src/services/products.service.js
+
 const ProductsModel = require('../models/Product');
 
 class ProductsService {
   async create(productData) {
     try {
-      console.log(" trace me i am the problem")
+      
       return await ProductsModel.create(productData);
     } catch (error) {
       throw new Error(`Product creation failed: ${error.message}`);

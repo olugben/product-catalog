@@ -3,6 +3,14 @@ info:
   title: "Product API"
   description: "API for managing products"
   version: "1.0.0"
+host: "api.example.com"
+basePath: "/v1"
+schemes:
+  - "https"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
 paths:
   /api/products:
     get:
@@ -12,48 +20,188 @@ paths:
       tags:
         - "Products"
       responses:
-        '200':
+        200:
           description: "Products retrieved successfully"
-          content:
-            application/json:
-              schema:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "success"
+              data:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: "success"
-                  data:
-                    type: object
-                    properties:
-                      products:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
-                              example: 1
-                            name:
-                              type: string
-                              example: "Product A"
-                            price:
-                              type: number
-                              format: float
-                              example: 29.99
-                            stock:
-                              type: integer
-                              example: 100
-                            created_at:
-                              type: string
-                              format: date-time
-                              example: "2023-04-22T10:00:00Z"
-                            updated_at:
-                              type: string
-                              format: date-time
-                              example: "2023-04-22T10:10:00Z"
-        '500':
+                  products:
+                    type: array
+                    items:
+                      $ref: "#/definitions/Product"
+        500:
           description: "Internal server error"
     post:
       summary: "Create a new product"
       description: "Creates a new product with the provided name, price, and stock."
       operationId: "createProduct"
+      tags:
+        - "Products"
+      parameters:
+        - in: body
+          name: product
+          description: "Product object to create"
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - price
+              - stock
+            properties:
+              name:
+                type: string
+                example: "Product A"
+              price:
+                type: number
+                format: float
+                example: 29.99
+              stock:
+                type: integer
+                example: 100
+      responses:
+        201:
+          description: "Product created successfully"
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "success"
+              data:
+                $ref: "#/definitions/Product"
+        400:
+          description: "Invalid input"
+        500:
+          description: "Internal server error"
+
+  /api/products/{id}:
+    get:
+      summary: "Get a specific product"
+      description: "Retrieves a single product by its ID."
+      operationId: "getProductById"
+      tags:
+        - "Products"
+      parameters:
+        - in: path
+          name: id
+          description: "ID of the product to retrieve"
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: "Product retrieved successfully"
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "success"
+              data:
+                $ref: "#/definitions/Product"
+        404:
+          description: "Product not found"
+        500:
+          description: "Internal server error"
+    
+    put:
+      summary: "Update a product"
+      description: "Updates an existing product with the provided data."
+      operationId: "updateProduct"
+      tags:
+        - "Products"
+      parameters:
+        - in: path
+          name: id
+          description: "ID of the product to update"
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: product
+          description: "Product data to update"
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Updated Product A"
+              price:
+                type: number
+                format: float
+                example: 34.99
+              stock:
+                type: integer
+                example: 150
+      responses:
+        200:
+          description: "Product updated successfully"
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "success"
+              data:
+                $ref: "#/definitions/Product"
+        400:
+          description: "Invalid input"
+        404:
+          description: "Product not found"
+        500:
+          description: "Internal server error"
+    
+    delete:
+      summary: "Delete a product"
+      description: "Deletes a product by its ID."
+      operationId: "deleteProduct"
+      tags:
+        - "Products"
+      parameters:
+        - in: path
+          name: id
+          description: "ID of the product to delete"
+          required: true
+          type: integer
+          format: int64
+      responses:
+        204:
+          description: "Product deleted successfully"
+        404:
+          description: "Product not found"
+        500:
+          description: "Internal server error"
+
+definitions:
+  Product:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "Product A"
+      price:
+        type: number
+        format: float
+        example: 29.99
+      stock:
+        type: integer
+        example: 100
+      created_at:
+        type: string
+        format: date-time
+        example: "2023-04-22T10:00:00Z"
+      updated_at:
+        type: string
+        format: date-time
+        example: "2023-04-22T10:10:00Z"
