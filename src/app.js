@@ -18,7 +18,7 @@ app.use(express.json());
 // API Documentation
 const swaggerSpec = YAML.load("./swagger.yaml");
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
-console.log(JSON.stringify(swaggerSpec, null, 2)); // Pretty print the Swagger spec
+// console.log(JSON.stringify(swaggerSpec, null, 2)); // Pretty print the Swagger spec
 
 // Routes
 app.use('/api/products', productRoutes);

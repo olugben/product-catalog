@@ -60,8 +60,8 @@ const searchProducts = async (req, res, next) => {
 
 const getAllProducts = async (req, res, next) => {
   try {
-    const { name, minPrice, maxPrice } = req.query;
-    const products = await productsService.search({ name, minPrice, maxPrice });
+
+    const products = await productsService.getAll();
 
     res.status(200).json({
       status: 'success',
@@ -79,8 +79,8 @@ const getAllProducts = async (req, res, next) => {
 const getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const products = await productsService.search({}); 
-    const product = products.find(p => p.id === parseInt(id)); 
+
+    const product = await productsService.getById(id)
 
     if (!product) {
       throw new Error(`Product with ID ${id} not found`);
@@ -100,7 +100,7 @@ const getProductById = async (req, res, next) => {
 };
 const updateProduct = async (req, res, next) => {
   try {
-    const { id } = req.query;
+    const { id } = req.params
     const { name, price, stock } = req.body;
 
     if (price && isNaN(price)) {

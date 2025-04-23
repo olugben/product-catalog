@@ -54,7 +54,16 @@ async findAll({ name, minPrice, maxPrice }) {
     return rows;
   }
 ,  
-
+// Find by ID
+async findById(id) {
+  const query = `
+    SELECT * FROM products
+    WHERE id = $1 AND deleted_at IS NULL;
+  `;
+  const { rows } = await db.query(query, [id]);
+  return rows[0];
+}
+,
   // Soft delete
   async delete(id) {
     const query = `

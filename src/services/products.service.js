@@ -29,7 +29,7 @@ class ProductsService {
 
   async getById(id) {
     try {
-      const product = await ProductsModel.findById(id);
+      const product = await ProductsModel.findById(id)
       if (!product) throw new Error('Product not found');
       return product;
     } catch (error) {
